@@ -42,11 +42,11 @@ public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
 
 
 	@Override
-	public void open(Configuration parameters) throws Exception {
-		super.open(parameters);
+	public void open(Configuration parameters) {
 		if (StringUtils.isEmpty(this.clientAddress)) {
 			this.clientAddress = parameters.getString("web3j.clientAddress", "http://localhost:8545");
 		}
+		this.timeoutSeconds = parameters.getLong("web3j.timeout", this.timeoutSeconds);
 
 		generateClient(clientAddress, timeoutSeconds);
 
@@ -64,8 +64,7 @@ public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
 
 	@Override
 	public void run(SourceContext<EthBlock> sourceContext) {
-
-		web3j.catchUpToLatestAndSubscribeToNewBlocksObservable(DefaultBlockParameter.valueOf(start.toString()), true)
+		web3j.catchUpToLatestAndSubscribeToNewBlocksObservable(DefaultBlockParameter.valueOf(start), true)
 				.subscribe(sourceContext::collect);
 	}
 

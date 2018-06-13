@@ -9,6 +9,8 @@ import org.web3j.protocol.ipc.WindowsIpcService;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 public class EthereumUtils {
 
 	public static OkHttpClient createOkHttpClient(Long timeoutSeconds) {
@@ -22,6 +24,11 @@ public class EthereumUtils {
 	}
 
 	public static Web3j generateClient(String clientAddress, Long timeoutSeconds) {
+
+		if (isEmpty(clientAddress)) {
+			throw new IllegalArgumentException("You have to define client address, use constructor or environment variable 'web3j.clientAddress'");
+		}
+
 		Web3jService web3jService;
 		if (clientAddress.startsWith("http")) {
 			web3jService = new HttpService(clientAddress, createOkHttpClient(timeoutSeconds), false);

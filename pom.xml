@@ -83,6 +83,13 @@
             <type>test-jar</type>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.ganchix</groupId>
+            <artifactId>testcontainers-java-module-ganache</artifactId>
+            <version>0.0.2</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

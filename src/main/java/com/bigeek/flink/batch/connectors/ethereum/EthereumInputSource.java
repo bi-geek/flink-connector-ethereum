@@ -59,8 +59,9 @@ public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputS
 		if (StringUtils.isEmpty(this.clientAddress)) {
 			this.clientAddress = parameters.getString("web3j.clientAddress", "http://localhost:8545");
 		}
-		this.timeoutSeconds = parameters.getLong("web3j.timeout", this.timeoutSeconds);
-
+		if (this.timeoutSeconds != null) {
+			this.timeoutSeconds = parameters.getLong("web3j.timeout", this.timeoutSeconds);
+		}
 
 		this.web3j = generateClient(this.clientAddress, this.timeoutSeconds);
 
@@ -83,15 +84,20 @@ public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputS
 			this.end = parameters.getInteger("web3j.end", latest);
 		}
 
+		if (this.start >= this.end) {
+			throw new IllegalArgumentException("Start block must have less value than end block");
+
+		}
+
 	}
 
 	@Override
-	public BaseStatistics getStatistics(BaseStatistics cachedStatistics) throws IOException {
+	public BaseStatistics getStatistics(BaseStatistics cachedStatistics)  {
 		return cachedStatistics;
 	}
 
 	@Override
-	public GenericInputSplit[] createInputSplits(int minNumSplits) throws IOException {
+	public GenericInputSplit[] createInputSplits(int minNumSplits)  {
 
 		GenericInputSplit[] ret = new GenericInputSplit[(this.end - this.start) + 1];
 
@@ -138,7 +144,7 @@ public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputS
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		web3j.shutdown();
 	}
 

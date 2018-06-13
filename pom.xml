@@ -5,22 +5,42 @@
 
     <groupId>com.bigeek</groupId>
     <artifactId>flink-connector-ethereum</artifactId>
-    <version>1.5.0</version>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>flink-connector-ethereum</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Flink connector for Ethereum</description>
+    <url>https://github.com/bi-geek/flink-connector-ethereum</url>
 
-    <parent>
-        <groupId>org.apache.flink</groupId>
-        <artifactId>flink-connectors</artifactId>
-        <version>1.5.0</version>
-    </parent>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/bi-geek/flink-connector-ethereum.git</connection>
+        <developerConnection>scm:git:https://github.com/bi-geek/flink-connector-ethereum.git</developerConnection>
+        <url>https://github.com/bi-geek/flink-connector-ethereum/tree/master</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Rafael Ríos Moya</name>
+            <email>ganchix@gmail.com</email>
+            <organization>Ganchix</organization>
+        </developer>
+    </developers>
 
 
     <!-- Allow users to pass custom connector versions -->
     <properties>
         <web3j.version>3.4.0</web3j.version>
+        <flink.version>1.5.0</flink.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <testcontainers-java-module-ganache.version>0.0.2</testcontainers-java-module-ganache.version>
     </properties>
 
     <dependencies>
@@ -37,48 +57,27 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-java</artifactId>
-            <version>${project.version}</version>
+            <version>${flink.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
-            <version>${project.version}</version>
+            <version>${flink.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>LATEST</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>LATEST</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>LATEST</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-jdbc</artifactId>
-            <version>1.5.0</version>
-        </dependency>
         <!-- test dependencies -->
 
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-test-utils_${scala.binary.version}</artifactId>
-            <version>${project.version}</version>
+            <version>${flink.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
-            <version>${project.version}</version>
+            <version>${flink.version}</version>
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>
@@ -86,7 +85,7 @@
         <dependency>
             <groupId>io.github.ganchix</groupId>
             <artifactId>testcontainers-java-module-ganache</artifactId>
-            <version>0.0.2</version>
+            <version>${testcontainers-java-module-ganache.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -96,107 +95,75 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
                 <configuration>
-                    <rerunFailingTestsCount>3</rerunFailingTestsCount>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
                 <executions>
                     <execution>
-                        <id>shade-flink</id>
-                        <phase>package</phase>
+                        <id>attach-sources</id>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
-                        <configuration>
-                            <shadeTestJar>false</shadeTestJar>
-                            <artifactSet>
-                                <includes>
-                                    <include>*:*</include>
-                                </includes>
-                            </artifactSet>
-                            <relocations>
-                                <!-- elasticsearch 1.x already shades this but forgets the service file -->
-                                <relocation>
-                                    <pattern>com.fasterxml.jackson</pattern>
-                                    <shadedPattern>
-                                        org.apache.flink.streaming.connectors.elasticsearch.shaded.org.elasticsearch.common.jackson
-                                    </shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.spatial4j</pattern>
-                                    <shadedPattern>
-                                        org.apache.flink.streaming.connectors.elasticsearch.shaded.com.spatial4j
-                                    </shadedPattern>
-                                </relocation>
-
-                                <relocation>
-                                    <pattern>org.apache</pattern>
-                                    <shadedPattern>
-                                        org.apache.flink.streaming.connectors.elasticsearch.shaded.org.apache
-                                    </shadedPattern>
-                                    <excludes>
-                                        <!-- keep flink classes as they are (exceptions as above) -->
-                                        <exclude>org.apache.flink.**</exclude>
-                                        <exclude>org.apache.log4j.**</exclude> <!-- provided -->
-                                    </excludes>
-                                </relocation>
-
-                                <relocation>
-                                    <pattern>org.antlr</pattern>
-                                    <shadedPattern>
-                                        org.apache.flink.streaming.connectors.elasticsearch.shaded.org.antlr
-                                    </shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.joda</pattern>
-                                    <shadedPattern>org.apache.flink.streaming.connectors.elasticsearch.shaded.org.joda
-                                    </shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.tartarus</pattern>
-                                    <shadedPattern>
-                                        org.apache.flink.streaming.connectors.elasticsearch.shaded.org.tartarus
-                                    </shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.yaml</pattern>
-                                    <shadedPattern>org.apache.flink.streaming.connectors.elasticsearch.shaded.org.yaml
-                                    </shadedPattern>
-                                </relocation>
-
-                            </relocations>
-                            <filters>
-                                <filter>
-                                    <artifact>*</artifact>
-                                    <excludes>
-                                        <exclude>log4j.properties</exclude>
-                                        <exclude>config/favicon.ico</exclude>
-                                        <exclude>mozilla/**</exclude>
-                                        <exclude>META-INF/maven/com*/**</exclude>
-                                        <exclude>META-INF/maven/io*/**</exclude>
-                                        <exclude>META-INF/maven/joda*/**</exclude>
-                                        <exclude>META-INF/maven/net*/**</exclude>
-                                        <exclude>META-INF/maven/org.an*/**</exclude>
-                                        <exclude>META-INF/maven/org.apache.h*/**</exclude>
-                                        <exclude>META-INF/maven/org.apache.commons/**</exclude>
-                                        <exclude>META-INF/maven/org.apache.flink/force-shading/**</exclude>
-                                        <exclude>META-INF/maven/org.apache.logging*/**</exclude>
-                                        <exclude>META-INF/maven/org.e*/**</exclude>
-                                        <exclude>META-INF/maven/org.h*/**</exclude>
-                                        <exclude>META-INF/maven/org.j*/**</exclude>
-                                        <exclude>META-INF/maven/org.y*/**</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <formats>
+                        <format>html</format>
+                        <format>xml</format>
+                    </formats>
+                    <check/>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 </project>

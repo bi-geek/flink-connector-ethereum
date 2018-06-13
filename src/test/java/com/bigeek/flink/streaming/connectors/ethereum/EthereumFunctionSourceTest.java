@@ -2,14 +2,11 @@ package com.bigeek.flink.streaming.connectors.ethereum;
 
 import io.github.ganchix.ganache.GanacheContainer;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
-import org.apache.flink.streaming.api.watermark.Watermark;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.web3j.crypto.Credentials;
-import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
@@ -17,6 +14,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Test class .
+ */
 public class EthereumFunctionSourceTest {
 
 	@Rule

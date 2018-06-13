@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
-import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
 import java.io.IOException;
@@ -15,6 +14,9 @@ import java.math.BigInteger;
 
 import static com.bigeek.flink.utils.EthereumUtils.generateClient;
 
+/**
+ * Funtion source for ethereum .
+ */
 public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
 
 	private Logger logger = LoggerFactory.getLogger(EthereumFunctionSource.class);

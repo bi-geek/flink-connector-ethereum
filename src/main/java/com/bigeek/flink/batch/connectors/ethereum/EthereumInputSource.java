@@ -1,12 +1,14 @@
 package com.bigeek.flink.batch.connectors.ethereum;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.api.common.io.DefaultInputSplitAssigner;
 import org.apache.flink.api.common.io.RichInputFormat;
 import org.apache.flink.api.common.io.statistics.BaseStatistics;
-import org.apache.flink.configuration.Configuration;
 import org.apache.flink.core.io.GenericInputSplit;
 import org.apache.flink.core.io.InputSplitAssigner;
+
+import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.web3j.protocol.Web3j;
@@ -18,6 +20,9 @@ import java.math.BigInteger;
 
 import static com.bigeek.flink.utils.EthereumUtils.generateClient;
 
+/**
+ * Input Source for Ethereum .
+ */
 public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputSplit> {
 
 	private Logger logger = LoggerFactory.getLogger(EthereumInputSource.class);
@@ -56,9 +61,11 @@ public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputS
 
 	@Override
 	public void configure(Configuration parameters) {
+
 		if (StringUtils.isEmpty(this.clientAddress)) {
 			this.clientAddress = parameters.getString("web3j.clientAddress", "http://localhost:8545");
 		}
+
 		if (this.timeoutSeconds != null) {
 			this.timeoutSeconds = parameters.getLong("web3j.timeout", this.timeoutSeconds);
 		}

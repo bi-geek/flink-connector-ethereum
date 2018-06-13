@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+/**
+ * Utils class .
+ */
 public class EthereumUtils {
 
 	public static OkHttpClient createOkHttpClient(Long timeoutSeconds) {

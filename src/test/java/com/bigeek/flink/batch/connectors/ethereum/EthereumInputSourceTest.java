@@ -6,7 +6,9 @@ import org.apache.flink.core.io.GenericInputSplit;
 import org.apache.flink.core.io.InputSplit;
 import org.apache.flink.core.io.InputSplitAssigner;
 import org.jetbrains.annotations.NotNull;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.tx.Transfer;
@@ -19,6 +21,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Tests class .
+ */
 public class EthereumInputSourceTest {
 
 	@Rule
@@ -27,7 +32,7 @@ public class EthereumInputSourceTest {
 	private EthereumInputSource ethereumInputSource;
 
 	@Before
-	public void setUpClass() throws Exception {
+	public void setUpClass() {
 		List<Credentials> credentials = ganacheContainer.getCredentials();
 		credentials.forEach(credential -> {
 			try {

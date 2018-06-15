@@ -16,7 +16,12 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 public class EthereumUtils {
 
-	public static OkHttpClient createOkHttpClient(Long timeoutSeconds) {
+	/**
+	 * Create OkHttpClient client for Web3j.
+	 * @param timeoutSeconds, can be null
+	 * @return OkHttpClient.
+	 */
+	private static OkHttpClient createOkHttpClient(Long timeoutSeconds) {
 		OkHttpClient.Builder builder = new OkHttpClient.Builder();
 		if (timeoutSeconds != null) {
 			builder.connectTimeout(timeoutSeconds, TimeUnit.SECONDS);
@@ -26,6 +31,13 @@ public class EthereumUtils {
 		return builder.build();
 	}
 
+	/**
+	 * Generate Ethereum client.
+	 *
+	 * @param clientAddress
+	 * @param timeoutSeconds
+	 * @return Web3j client
+	 */
 	public static Web3j generateClient(String clientAddress, Long timeoutSeconds) {
 
 		if (isEmpty(clientAddress)) {

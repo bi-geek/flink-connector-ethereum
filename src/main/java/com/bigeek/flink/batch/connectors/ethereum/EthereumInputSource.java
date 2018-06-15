@@ -25,28 +25,67 @@ import static com.bigeek.flink.utils.EthereumUtils.generateClient;
  */
 public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputSplit> {
 
+	/**
+	 * Logger .
+	 */
 	private Logger logger = LoggerFactory.getLogger(EthereumInputSource.class);
 
+	/**
+	 * Web3j client .
+	 */
 	private transient Web3j web3j;
 
+	/**
+	 * Start block.
+	 */
 	private Integer start;
 
+	/**
+	 * End block .
+	 */
 	private Integer end;
 
+	/**
+	 * Indicates if it is reached .
+	 */
 	private boolean reachedEnd = false;
 
+	/**
+	 * Indicates the address for Ethereum node.
+	 */
 	private String clientAddress;
 
+	/**
+	 * Indicate the actual block.
+	 */
 	private Integer split;
 
+	/**
+	 * Timeout for Ethereum client.
+	 */
 	private Long timeoutSeconds;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param clientAddress
+	 * @param start
+	 * @param end
+	 */
 	public EthereumInputSource(String clientAddress, Integer start, Integer end) {
 		this.start = start;
 		this.end = end;
 		this.clientAddress = clientAddress;
 	}
 
+	/**
+	 * Constructor .
+	 *
+	 * @param clientAddress
+	 * @param start
+	 * @param end
+	 * @param timeoutSeconds
+	 */
 	public EthereumInputSource(String clientAddress, Integer start, Integer end, Long timeoutSeconds) {
 		this.start = start;
 		this.end = end;
@@ -54,7 +93,9 @@ public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputS
 		this.timeoutSeconds = timeoutSeconds;
 	}
 
-
+	/**
+	 * Default constructor .
+	 */
 	public EthereumInputSource() {
 	}
 

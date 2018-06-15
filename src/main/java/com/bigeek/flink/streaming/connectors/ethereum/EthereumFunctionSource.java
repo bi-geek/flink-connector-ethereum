@@ -15,20 +15,41 @@ import java.math.BigInteger;
 import static com.bigeek.flink.utils.EthereumUtils.generateClient;
 
 /**
- * Funtion source for ethereum .
+ * Function source for ethereum .
  */
 public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
 
+	/**
+	 * Logger.
+	 */
 	private Logger logger = LoggerFactory.getLogger(EthereumFunctionSource.class);
 
+	/**
+	 * Web3j client for Ethereum.
+	 */
 	private transient Web3j web3j;
 
+	/**
+	 * Start block .
+	 */
 	private Integer start;
+
+	/**
+	 * Client address for ethereum .
+	 */
 	private String clientAddress;
 
+	/**
+	 * Timeout in seconds.
+	 */
 	private Long timeoutSeconds;
 
 
+	/**
+	 * Constructor.
+	 * @param clientAddress
+	 * @param start
+	 */
 	public EthereumFunctionSource(String clientAddress, Integer start) {
 
 		this.clientAddress = clientAddress;
@@ -36,6 +57,12 @@ public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
 
 	}
 
+	/**
+	 * Constructor.
+	 * @param clientAddress
+	 * @param start
+	 * @param timeoutSeconds
+	 */
 	public EthereumFunctionSource(String clientAddress, Integer start, Long timeoutSeconds) {
 
 		this.clientAddress = clientAddress;
@@ -44,6 +71,9 @@ public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
 
 	}
 
+	/**
+	 *Default constructor.
+	 */
 	public EthereumFunctionSource() {
 	}
 

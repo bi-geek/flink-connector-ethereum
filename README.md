@@ -21,7 +21,7 @@ It also provides the streaming version.
 
 ```xml
 <dependency>
-    <groupId>com.bigeek</groupId>
+    <groupId>com.github.bi-geek</groupId>
     <artifactId>flink-connector-ethereum</artifactId>
     <version>1.0.0</version>
 </dependency>

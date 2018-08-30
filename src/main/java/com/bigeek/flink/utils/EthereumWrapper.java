@@ -11,24 +11,24 @@ public class EthereumWrapper {
 
     /**
      * Get instance with parameters.
+     *
      * @param address
      * @param timeout
      * @return web3j client
      */
-    public static Web3j getInstance(String address, Long timeout) {
-        if (web3jInstance == null) {
-            web3jInstance = EthereumUtils.generateClient(address, timeout);
-        }
+    public static Web3j configureInstance(String address, Long timeout) {
+        web3jInstance = EthereumUtils.generateClient(address, timeout);
         return web3jInstance;
     }
 
     /**
      * Get the initialized instance.
+     *
      * @return web3j client
      */
     public static Web3j getInstance() {
         if (web3jInstance == null) {
-            throw new IllegalStateException("Not instantiated");
+            throw new IllegalStateException("Need configure first");
         }
         return web3jInstance;
     }

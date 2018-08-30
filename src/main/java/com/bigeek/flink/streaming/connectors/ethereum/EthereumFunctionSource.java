@@ -88,7 +88,7 @@ public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
         if (this.timeoutSeconds != null) {
             this.timeoutSeconds = parameters.getLong("web3j.timeout", this.timeoutSeconds);
         }
-        Web3j web3j = EthereumWrapper.getInstance(this.clientAddress, this.timeoutSeconds);
+        Web3j web3j = EthereumWrapper.configureInstance(this.clientAddress, this.timeoutSeconds);
         if (start == null) {
             start = web3j.ethGetBlockByNumber(DefaultBlockParameter.valueOf("latest"), false)
                     .send()

@@ -104,7 +104,7 @@ public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputS
             this.timeoutSeconds = parameters.getLong("web3j.timeout", this.timeoutSeconds);
         }
 
-        Web3j web3j = EthereumWrapper.getInstance(this.clientAddress, this.timeoutSeconds);
+        Web3j web3j = EthereumWrapper.configureInstance(this.clientAddress, this.timeoutSeconds);
 
 
         if (this.start == null) {

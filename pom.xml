@@ -5,7 +5,7 @@
 
     <groupId>com.github.bi-geek</groupId>
     <artifactId>flink-connector-ethereum</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>flink-connector-ethereum</name>
@@ -30,7 +30,7 @@
         <developer>
             <name>Rafael Ríos Moya</name>
             <email>ganchix@gmail.com</email>
-            <organization>Ganchix</organization>
+            <organization>Bi-Geek</organization>
         </developer>
     </developers>
 
@@ -39,7 +39,7 @@
         <web3j.version>3.4.0</web3j.version>
         <flink.version>1.5.0</flink.version>
         <scala.binary.version>2.11</scala.binary.version>
-        <testcontainers-java-module-ganache.version>0.0.2</testcontainers-java-module-ganache.version>
+        <testcontainers-java-module-ganache.version>0.0.4</testcontainers-java-module-ganache.version>
     </properties>
 
     <dependencies>

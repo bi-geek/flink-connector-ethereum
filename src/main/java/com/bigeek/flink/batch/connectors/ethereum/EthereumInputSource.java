@@ -39,6 +39,11 @@ public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputS
     private Integer end;
 
     /**
+     * Times to try the connection operation .
+     */
+    private Integer tries = 0;
+
+    /**
      * Indicates if it is reached .
      */
     private boolean reachedEnd = false;
@@ -87,6 +92,23 @@ public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputS
     }
 
     /**
+     * Constructor .
+     *
+     * @param clientAddress
+     * @param start
+     * @param end
+     * @param timeoutSeconds
+     * @param tries
+     */
+    public EthereumInputSource(String clientAddress, Integer start, Integer end, Long timeoutSeconds, Integer tries) {
+        this.start = start;
+        this.end = end;
+        this.clientAddress = clientAddress;
+        this.timeoutSeconds = timeoutSeconds;
+        this.tries = tries;
+    }
+
+    /**
      * Default constructor .
      */
     public EthereumInputSource() {
@@ -104,12 +126,17 @@ public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputS
             this.timeoutSeconds = parameters.getLong("web3j.timeout", this.timeoutSeconds);
         }
 
+        if (this.tries != null) {
+            this.tries = parameters.getInteger("web3j.tries", this.tries);
+        }
+
         Web3j web3j = EthereumWrapper.configureInstance(this.clientAddress, this.timeoutSeconds);
 
 
         if (this.start == null) {
             this.start = parameters.getInteger("web3j.start", 0);
         }
+
         if (this.end == null) {
             int latest;
             try {
@@ -171,17 +198,31 @@ public class EthereumInputSource extends RichInputFormat<EthBlock, GenericInputS
     @Override
     public EthBlock nextRecord(EthBlock reuse) throws IOException {
 
+        Integer tryCounter = 0;
+        do {
 
-        logger.info("Getting block {}", this.split);
-        reuse = EthereumWrapper
-                .getInstance()
-                .ethGetBlockByNumber(DefaultBlockParameter.valueOf(BigInteger.valueOf(this.split)), true)
-                .send();
+            logger.info("Getting block {} in try {}", this.split, tryCounter);
+            try {
+                reuse = EthereumWrapper
+                        .getInstance()
+                        .ethGetBlockByNumber(DefaultBlockParameter.valueOf(BigInteger.valueOf(this.split)), true)
+                        .send();
 
-        logger.info("Block got {}", this.split);
-        reachedEnd = true;
+                logger.info("Block got {} in try {}", this.split, tryCounter);
+                reachedEnd = true;
+
+            } catch (Exception ex) {
+                tryCounter++;
+                logger.error("Error getting the block added increment try {}", tryCounter, ex);
+                if (tryCounter >= this.tries) {
+                    logger.error("Throw exception, not more tries exception: ", ex);
+                    throw ex;
+                }
+            }
+
+        } while (!reachedEnd && tryCounter < this.tries);
+
         return reuse;
-
     }
 
     @Override

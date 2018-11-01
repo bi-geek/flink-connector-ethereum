@@ -5,7 +5,7 @@
 
     <groupId>com.github.bi-geek</groupId>
     <artifactId>flink-connector-ethereum</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>flink-connector-ethereum</name>

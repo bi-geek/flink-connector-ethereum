@@ -27,7 +27,7 @@ It also provides the streaming version.
 <dependency>
     <groupId>com.github.bi-geek</groupId>
     <artifactId>flink-connector-ethereum</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 
 ```

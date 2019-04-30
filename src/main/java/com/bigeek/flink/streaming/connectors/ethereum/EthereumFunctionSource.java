@@ -1,6 +1,8 @@
 package com.bigeek.flink.streaming.connectors.ethereum;
 
 import com.bigeek.flink.utils.EthereumWrapper;
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
@@ -9,15 +11,18 @@ import org.slf4j.LoggerFactory;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.methods.response.EthBlock;
-import rx.Subscription;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.Objects.nonNull;
 
 /**
  * Function source for ethereum .
  */
 public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
+
 
     /**
      * Logger.
@@ -41,10 +46,25 @@ public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
     private Long timeoutSeconds;
 
     /**
-     * Subscription Ethereum
+     * Disposable Ethereum
      */
-    private transient Subscription subscription;
+    private volatile Disposable disposable;
 
+    /**
+     * Lock object
+     */
+    private transient Object waitLock = new Object();
+
+    /**
+     * Constructor.
+     *
+     * @param clientAddress
+     */
+    public EthereumFunctionSource(String clientAddress) {
+
+        this.clientAddress = clientAddress;
+
+    }
     /**
      * Constructor.
      *
@@ -55,6 +75,7 @@ public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
 
         this.clientAddress = clientAddress;
         this.start = start;
+
 
     }
 
@@ -77,6 +98,7 @@ public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
      * Default constructor.
      */
     public EthereumFunctionSource() {
+
     }
 
 
@@ -103,24 +125,35 @@ public class EthereumFunctionSource extends RichSourceFunction<EthBlock> {
 
     @Override
     public void close() {
-        if (subscription != null && !subscription.isUnsubscribed()) {
-            subscription.unsubscribe();
-        }
 
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
     }
 
     @Override
-    public void run(SourceContext<EthBlock> sourceContext) {
+    public void run(SourceContext<EthBlock> sourceContext) throws InterruptedException {
+        waitLock = new Object();
         logger.info("Generating subscription with start value {}", start);
-        subscription = EthereumWrapper.getInstance().catchUpToLatestAndSubscribeToNewBlocksObservable(DefaultBlockParameter.valueOf(BigInteger.valueOf(start)),
-                true)
-                .subscribe(sourceContext::collect);
+        Flowable<EthBlock> ethBlockFlowable = EthereumWrapper.getInstance()
+                .replayPastAndFutureBlocksFlowable(DefaultBlockParameter.valueOf(BigInteger.valueOf(start)),
+                        true);
+        if (nonNull(timeoutSeconds)) {
+            ethBlockFlowable = ethBlockFlowable.timeout(timeoutSeconds, TimeUnit.SECONDS);
+        }
+        disposable = ethBlockFlowable.subscribe(sourceContext::collect);
+
+        while (!disposable.isDisposed()) {
+            synchronized (waitLock) {
+                waitLock.wait(100L);
+            }
+        }
     }
 
     @Override
     public void cancel() {
-        if (subscription != null && !subscription.isUnsubscribed()) {
-            subscription.unsubscribe();
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
         }
     }
 }
